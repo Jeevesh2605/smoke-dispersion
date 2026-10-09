@@ -332,3 +332,7 @@ dependencies may depend on the local files available.
   for NCR district boundaries; consult that repository’s disclaimer.
 - [National Capital Region Planning Board](https://ncrpb.nic.in/) for
   information about constituent NCR districts.
+
+## License
+
+MIT

@@ -1,0 +1,46 @@
+# Secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Node / frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# macOS / editors
+.DS_Store
+.vscode/
+.idea/
+
+# Model artifacts
+*.joblib
+*.pkl
+*.pt
+*.pth
+
+# Large historical datasets and generated intermediates
+data/raw/fires.csv
+data/raw/fires_historical.csv
+data/raw/weather_historical_hourly.csv
+data/raw/xkdr_historical_pm25.csv
+data/raw/aqi_raw.csv
+data/raw/wind_station_raw.csv
+data/processed/*.csv
+
+# Keep files needed by the current app and forecast
+!data/processed/location_metadata.csv
+!data/processed/today_fire_features.csv
+!data/raw/aqi_recent.csv
+!data/raw/firms_nrt.csv
+!data/raw/candidate_stations.csv

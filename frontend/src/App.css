@@ -1,0 +1,153 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: "DM Sans", sans-serif;
+  background: #f8edeb;
+  color: #292526;
+}
+
+button {
+  font-family: inherit;
+}
+
+.app {
+  min-height: 100vh;
+  overflow: hidden;
+  background: #f8edeb;
+}
+
+/* ---------- hero layout ---------- */
+
+.hero {
+  min-height: 100vh;
+  display: grid;
+  /* minmax(0, …) lets columns shrink instead of overflowing into each other */
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: 56px;
+  padding: 50px clamp(24px, 5vw, 80px);
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 5;
+  min-width: 0;
+  text-align: left;
+}
+
+.eyebrow {
+  margin: 0 0 24px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #9a7472;
+}
+
+h1 {
+  margin: 0;
+  color: #292526;
+  font-size: clamp(40px, 4.6vw, 72px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-weight: 700;
+}
+
+.subtitle {
+  max-width: 420px;
+  margin: 28px 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #76696a;
+}
+
+.primary-button {
+  border: none;
+  padding: 16px 24px;
+  border-radius: 14px;
+  background: #292526;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(41, 37, 38, 0.15);
+}
+
+.map-wrapper {
+  position: relative;
+  min-width: 0;
+  width: 100%;
+  height: min(78vh, 720px);
+  min-height: 560px;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+    min-height: auto;
+    padding: 40px 24px;
+  }
+
+  .hero-copy {
+    text-align: center;
+  }
+
+  .subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .map-wrapper {
+    height: 520px;
+    min-height: 0;
+  }
+}
+
+/* ---------- entrance animation ---------- */
+
+.hero-copy > * {
+  opacity: 0;
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-copy .eyebrow { animation-delay: 0.1s; }
+.hero-copy h1 { animation-delay: 0.2s; }
+.hero-copy .subtitle { animation-delay: 0.3s; }
+.hero-copy .primary-button { animation-delay: 0.4s; }
+
+.map-wrapper {
+  opacity: 0;
+  animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

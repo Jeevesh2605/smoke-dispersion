@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-10-09T17:43:12.119872+05:30",
+  "fire_source_file": "data/raw/firms_nrt.csv",
+  "fire_detection_date_used": "2026-10-09",
+  "fire_detection_rows_used": 46,
+  "fire_data_is_current": false,
+  "weather_source": "Open-Meteo current weather API",
+  "weather_observed_at": [
+    "2026-10-09T17:30"
+  ],
+  "station_count": 56,
+  "note": "The detection date is the newest date in the local FIRMS file; it is not proof that the file itself is up to date."
+}

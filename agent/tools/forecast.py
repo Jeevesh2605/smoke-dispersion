@@ -7,7 +7,6 @@ import ssl
 
 import certifi
 import pandas as pd
-from strands import tool
 
 from tools.predict_pm25 import predict_pm25
 from tools.location import get_location_metadata
@@ -51,7 +50,6 @@ def fetch_location_wind(latitude: float, longitude: float) -> dict:
     }
 
 
-@tool
 def forecast_today(location_id: int) -> dict:
     """Predict PM2.5 using recent observations, local wind and stored fire features."""
     try:

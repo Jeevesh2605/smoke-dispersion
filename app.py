@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import pandas as pd
 import joblib
+import os
 
 MODEL_PATH = "data/processed/unified_random_forest.joblib"
 METADATA_PATH = "data/processed/location_metadata.csv"
@@ -31,6 +32,11 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        *[
+            origin.strip().rstrip("/")
+            for origin in os.getenv("FRONTEND_ORIGINS", "").split(",")
+            if origin.strip()
+        ],
     ],
     allow_credentials=True,
     allow_methods=["*"],

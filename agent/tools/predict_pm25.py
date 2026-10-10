@@ -1,9 +1,7 @@
 import json
 import boto3
-from strands import tool
 
 
-@tool
 def predict_pm25(
     location_id: int,
     pm25_lag_1: float,

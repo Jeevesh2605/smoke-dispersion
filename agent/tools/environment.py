@@ -1,12 +1,10 @@
 import pandas as pd
-from strands import tool
 
 
 FIRE_FILE = "../data/raw/fires.csv"
 WIND_FILE = "../data/raw/wind_station_raw.csv"
 
 
-@tool
 def get_environment_snapshot(
     latitude: float,
     longitude: float,

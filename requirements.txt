@@ -3,3 +3,8 @@ numpy
 requests
 scikit-learn
 joblib
+fastapi
+uvicorn
+boto3
+strands-agents
+certifi

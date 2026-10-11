@@ -33,29 +33,9 @@ SmokeGuard engineers fire-proximity, wind-related and lagged PM2.5 features for 
 
 ## Architecture
 
-```mermaid
-flowchart LR
-  subgraph Offline["Offline: data and training"]
-    FIRMS["NASA FIRMS<br/>VIIRS fire detections"] --> FE["Feature engineering<br/>scripts"]
-    AQ["Station PM2.5 history"] --> FE
-    WX["Open-Meteo archive<br/>per-station wind"] --> FE
-    FE --> RF["Random Forest<br/>unified_random_forest.joblib"]
-  end
+<img width="1920" height="1080" alt="smokeguard_architecture" src="https://github.com/user-attachments/assets/33c12b46-9947-4296-bec1-8413aeb207e3" />
 
-  RF --> LOCAL["Local model bundle"]
-  RF -.->|deployed| SM["SageMaker Serverless<br/>smoke-forecaster"]
 
-  subgraph API["FastAPI app.py"]
-    P["/predict<br/>/forecast"]
-    A["/agent/forecast<br/>/agent/advice"]
-  end
-
-  LOCAL --> P
-  A --> SM
-  OM["Open-Meteo<br/>current wind"] --> A
-  CUR["aqi_recent.csv<br/>today_fire_features.csv"] --> A
-  UI["React app<br/>dashboard and 3D map"] --> A
-```
 
 The model artifacts are stored in Amazon S3 and the custom container image used for deployment is stored in Amazon ECR.
 
@@ -297,7 +277,7 @@ Scripts use paths relative to the repository root, so run them from there (for e
 - **Data and ML:** Python, pandas, scikit-learn (Random Forest), joblib, NASA FIRMS VIIRS, Open-Meteo
 - **Backend:** FastAPI, Uvicorn, Boto3
 - **Agent tooling:** Strands Agents
-- **AWS:** Amazon SageMaker Serverless Inference, Amazon S3, Amazon ECR
+- **AWS:** Amazon SageMaker Serverless Inference, Amazon S3, Amazon ECR, Amazon ECS (Fargate), Amazon EC2 (Application Load Balancer), Amazon API Gateway, AWS IAM, AWS Amplify
 - **Frontend:** React, Vite, JavaScript, CSS, three.js, `@react-three/fiber`, `@react-three/drei`
 
 ## Acknowledgements

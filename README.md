@@ -35,9 +35,11 @@ SmokeGuard engineers fire-proximity, wind-related and lagged PM2.5 features for 
 
 <img width="1920" height="1080" alt="smokeguard_architecture" src="https://github.com/user-attachments/assets/33c12b46-9947-4296-bec1-8413aeb207e3" />
 
+### Deployed request path
 
+The browser loads the React/Vite frontend hosted on **AWS Amplify**. When a user requests a forecast, the frontend calls the **Amazon API Gateway HTTP API** over HTTPS. API Gateway forwards the request to the **Application Load Balancer**, which routes it to the FastAPI service running in an **Amazon ECS task on AWS Fargate**. For the live `/agent/forecast/{location_id}` and `/agent/advice/{location_id}` flows, FastAPI gathers the latest available station readings, current wind and prepared fire features, then invokes the **Amazon SageMaker Serverless Inference** endpoint. The response returns through FastAPI, the load balancer and API Gateway to the frontend.
 
-The model artifacts are stored in Amazon S3 and the custom container image used for deployment is stored in Amazon ECR.
+**Supporting services:** Amazon ECR stores the backend container image; Amazon S3 stores model/data artifacts; AWS IAM roles grant the backend permission to invoke SageMaker and access required AWS resources.
 
 ## Model and evaluation
 
@@ -136,17 +138,18 @@ The backend uses FastAPI and Uvicorn (`app.py`). CORS allows `http://localhost:5
 
 `/predict` expects `location_id` plus `pm25_lag_1`, `pm25_lag_3`, `pm25_lag_7`, `wind_speed_kmh`, `wind_direction_deg`, `downwind_fire_count_50km`/`100km`/`200km`, `fire_intensity_50km`/`100km`/`200km` and `closest_downwind_fire_km`.
 
-## 3D air map
+### 3D Air Map Features
 
-The landing page includes an interactive 3D map built with three.js, `@react-three/fiber` and `@react-three/drei`.
-
-- **Regional coverage:** Delhi districts and 24 NCR districts outside Delhi.
-- **Risk colours:** District colours represent the project's Low, Moderate, High and Very High thresholds.
-- **Relative height:** The district with the highest PM2.5 value is tallest and the lowest is shortest; use the colour and tooltip value to interpret the level.
-- **Interaction:** Hover for district or station names and click for a detail card.
+- **Regional coverage:** Covers Delhi and 24 NCR districts outside Delhi.
+- **Risk colours:** District colours represent the project's Low, Moderate, High and Very High PM2.5 risk thresholds.
+- **Relative height:** District height is scaled by PM2.5 values within the displayed region. Taller districts indicate higher values; use the colour and tooltip value to interpret the level.
+- **Interaction:** Hover over districts or station markers to view their names, and click a station marker to select it and update the detail card.
 - **Views:** Switch between *Entire NCR* and *Delhi*.
-- **Station markers:** Every station in `aqi_recent.csv` is drawn above its district.
-- **Highest-value marker:** A pin marks the district with the highest PM2.5 value in the region.
+- **Station markers:** Displays the monitoring stations listed in `aqi_recent.csv`.
+- **Highest-value marker:** Highlights the district with the highest PM2.5 value in the displayed region.
+- **Forecast loading:** The map scene remains mounted while forecast data reloads, avoiding unnecessary scene recreation.
+- **Spatial coverage:** District colouring uses available station readings and nearby-station estimates where direct station data is unavailable. The heat layer fades toward neutral grey approximately 28 km from a station; neutral areas should not be interpreted as reliable predictions.
+- **Testing status:** The scene and interaction flows have been tested headlessly using the project's installed library versions and data. Camera framing and final visual appearance still require manual verification in a real browser.
 
 District values use the average of the latest observed PM2.5 readings from stations inside each district. Districts without a station use an inverse-distance-weighted estimate from other stations and are labelled accordingly. **The map displays observations from `aqi_recent.csv`, not model predictions.**
 
@@ -277,7 +280,7 @@ Scripts use paths relative to the repository root, so run them from there (for e
 - **Data and ML:** Python, pandas, scikit-learn (Random Forest), joblib, NASA FIRMS VIIRS, Open-Meteo
 - **Backend:** FastAPI, Uvicorn, Boto3
 - **Agent tooling:** Strands Agents
-- **AWS:** Amazon SageMaker Serverless Inference, Amazon S3, Amazon ECR, Amazon ECS (Fargate), Amazon EC2 (Application Load Balancer), Amazon API Gateway, AWS IAM, AWS Amplify
+- **AWS:** Amazon SageMaker Serverless Inference, Amazon S3, Amazon ECR, Amazon ECS with AWS Fargate, Amazon API Gateway, Elastic Load Balancing (Application Load Balancer), AWS IAM, AWS Amplify
 - **Frontend:** React, Vite, JavaScript, CSS, three.js, `@react-three/fiber`, `@react-three/drei`
 
 ## Acknowledgements

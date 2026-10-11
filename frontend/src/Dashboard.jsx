@@ -1,5 +1,5 @@
-
 import { useEffect, useMemo, useState } from "react";
+import NCRHeatMap from "./components/NCRHeatMap";
 import "./Dashboard.css";
 
 const API_URL = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
@@ -217,6 +217,13 @@ export default function Dashboard({ onBack }) {
     setShowSuggestions(false);
   }
 
+  // Clicking a station on the heat map selects it, same as searching for it.
+  function chooseMapStation(id, name) {
+    setSelectedId(String(id));
+    setSearch(name);
+    setShowSuggestions(false);
+  }
+
   const risk = getRisk(data?.risk_level);
   const hasPrediction =
     data && Number.isFinite(Number(data.predicted_pm25));
@@ -321,24 +328,7 @@ export default function Dashboard({ onBack }) {
         </div>
       </section>
 
-      {loadingForecast && (
-        <div className="dashboard-message">
-          <span className="loading-dot" />
-          Loading forecast for {search || "selected location"}…
-        </div>
-      )}
-
-      {!loadingForecast && error && (
-        <div className="dashboard-error">
-          <strong>Forecast unavailable for this location</strong>
-          <p>{error}</p>
-          <button className="refresh-button" onClick={() => loadForecast()}>
-            Try again
-          </button>
-        </div>
-      )}
-
-      {!loadingForecast && !error && !data && !loadingStations && (
+      {!loadingForecast && !error && !selectedId && !loadingStations && (
         <div className="dashboard-message">
           Choose a monitoring location to view its forecast.
         </div>
@@ -362,160 +352,201 @@ export default function Dashboard({ onBack }) {
               <span>Model prediction</span>
             </div>
           </section>
-        
-<section className="data-freshness-panel">
-  <div className="freshness-heading">
-    <div>
-      <span className="section-overline">DATA TRANSPARENCY</span>
-      <h3>Fire source freshness</h3>
-    </div>
-    <span className="freshness-status">
-      {data.fire_data_is_current ? "Sources recently updated" : "Some data is older"}
-    </span>
-  </div>
 
-  <div className="freshness-grid">
-    <div className="freshness-item">
-      <span>PM2.5 observation</span>
-      <strong>{data.latest_pm25_date || "Unavailable"}</strong>
-      <small>
-        {data.pm25_data_age_days != null
-          ? `${data.pm25_data_age_days} day(s) old`
-          : "Age unavailable"}
-      </small>
-    </div>
+          <section className="data-freshness-panel">
+            <div className="freshness-heading">
+              <div>
+                <span className="section-overline">DATA TRANSPARENCY</span>
+                <h3>Fire source freshness</h3>
+              </div>
+              <span className="freshness-status">
+                {data.fire_data_is_current ? "Sources recently updated" : "Some data is older"}
+              </span>
+            </div>
 
-    <div className="freshness-item">
-      <span>Weather observed</span>
-      <strong>{formatWeatherTimestamp(data.weather_observed_at)}</strong>
-      <small>{data.wind_source || "Weather source unavailable"}</small>
-    </div>
-
-    <div className="freshness-item">
-      <span>Fire detections acquired</span>
-      <strong>{data.fire_detection_date || "Unavailable"}</strong>
-      <small>
-        {data.fire_data_age_days != null
-          ? `${data.fire_data_age_days} day(s) old`
-          : "Age unavailable"}
-      </small>
-    </div>
-
-    <div className="freshness-item">
-      <span>Features regenerated</span>
-      <strong>
-        {data.fire_features_generated_at
-          ? data.fire_features_generated_at.replace("T", " ").slice(0, 19)
-          : "Unavailable"}
-      </strong>
-      <small>
-        {data.fire_detection_rows_used != null
-          ? `${data.fire_detection_rows_used} source detections`
-          : "Source count unavailable"}
-      </small>
-    </div>
-  </div>
-
-  {!data.fire_data_is_current && (
-    <p className="freshness-warning">
-      Feature calculations were regenerated, but the source feed has not been
-      verified as current. Fire detections may be incomplete or outdated, so
-      predictions may not reflect the latest pollution or fire conditions.
-    </p>
-  )}
-</section>
-
-          <section className="dashboard-grid">
-            <article className="featured-risk-card">
-              <div className="featured-card-header">
-                <span className="section-overline">PREDICTED PM2.5</span>
-                <span
-                  className="risk-badge"
-                  style={{
-                    color: risk.color,
-                    borderColor: `${risk.color}70`,
-                    background: `${risk.color}14`,
-                  }}
-                >
-                  <i style={{ background: risk.color }} />
-                  {risk.title}
-                </span>
+            <div className="freshness-grid">
+              <div className="freshness-item">
+                <span>PM2.5 observation</span>
+                <strong>{data.latest_pm25_date || "Unavailable"}</strong>
+                <small>
+                  {data.pm25_data_age_days != null
+                    ? `${data.pm25_data_age_days} day(s) old`
+                    : "Age unavailable"}
+                </small>
               </div>
 
-              <div className="featured-pm">
-                {hasPrediction ? Number(data.predicted_pm25).toFixed(1) : "—"}
-                <span>µg/m³</span>
+              <div className="freshness-item">
+                <span>Weather observed</span>
+                <strong>{formatWeatherTimestamp(data.weather_observed_at)}</strong>
+                <small>{data.wind_source || "Weather source unavailable"}</small>
               </div>
 
-              <p className="featured-caption">
-                Estimated fine-particle concentration from the SmokeGuard model.
-                This is a prediction, not a direct measurement.
+              <div className="freshness-item">
+                <span>Fire detections acquired</span>
+                <strong>{data.fire_detection_date || "Unavailable"}</strong>
+                <small>
+                  {data.fire_data_age_days != null
+                    ? `${data.fire_data_age_days} day(s) old`
+                    : "Age unavailable"}
+                </small>
+              </div>
+
+              <div className="freshness-item">
+                <span>Features regenerated</span>
+                <strong>
+                  {data.fire_features_generated_at
+                    ? data.fire_features_generated_at.replace("T", " ").slice(0, 19)
+                    : "Unavailable"}
+                </strong>
+                <small>
+                  {data.fire_detection_rows_used != null
+                    ? `${data.fire_detection_rows_used} source detections`
+                    : "Source count unavailable"}
+                </small>
+              </div>
+            </div>
+
+            {!data.fire_data_is_current && (
+              <p className="freshness-warning">
+                Feature calculations were regenerated, but the source feed has not been
+                verified as current. Fire detections may be incomplete or outdated, so
+                predictions may not reflect the latest pollution or fire conditions.
               </p>
-
-              <div className="risk-scale">
-                {[
-                  ["Low", "#36c995"],
-                  ["Moderate", "#f2c653"],
-                  ["High", "#ff8a4c"],
-                  ["Very High", "#ff4d78"],
-                ].map(([label, color]) => (
-                  <div className="risk-scale-item" key={label}>
-                    <i style={{ background: color }} />
-                    <span>{label}</span>
-                  </div>
-                ))}
-              </div>
-            </article>
-
-            <MetricCard
-              label="LATEST OBSERVED PM2.5"
-              value={
-                data.latest_pm25_observation != null
-                  ? Number(data.latest_pm25_observation).toFixed(1)
-                  : "—"
-              }
-              unit="µg/m³"
-              detail={
-                data.latest_pm25_date
-                  ? `Measured on ${data.latest_pm25_date}; latest available observation`
-                  : "No observation date returned"
-              }
-              accent="#e88ba0"
-            />
-
-            <MetricCard
-              label="WIND SPEED"
-              value={data.wind_speed_kmh != null ? Number(data.wind_speed_kmh).toFixed(1) : "—"}
-              unit="km/h"
-              detail={
-                data.wind_direction_deg != null
-                  ? `Direction: ${data.wind_direction_deg}° clockwise from north`
-                  : "Wind direction unavailable"
-              }
-              accent="#8bc9ff"
-            />
-
-            <MetricCard
-              label="DOWNWIND FIRE DETECTIONS · 50 KM"
-              value={data.downwind_fires_50km ?? "—"}
-              detail="Satellite detections classified as downwind within 50 km; not necessarily unique incidents."
-              accent="#ff8a4c"
-            />
-
-            <MetricCard
-              label="CLOSEST DOWNWIND FIRE"
-              value={
-                data.closest_downwind_fire_km != null &&
-                Number.isFinite(Number(data.closest_downwind_fire_km))
-                  ? Number(data.closest_downwind_fire_km).toFixed(1)
-                  : "—"
-              }
-              unit={data.closest_downwind_fire_km != null ? "km" : ""}
-              detail="Distance to the nearest detected downwind fire in the analysis."
-              accent="#ff6d88"
-            />
+            )}
           </section>
+        </>
+      )}
 
+      {/* Forecast cards on the left, NCR heat map on the right.
+          The map stays mounted while a forecast loads, so the camera can glide. */}
+      {selectedId && (
+        <section className="dashboard-split">
+          <div className="dashboard-split-main">
+            {loadingForecast && (
+              <div className="dashboard-message">
+                <span className="loading-dot" />
+                Loading forecast for {search || "selected location"}…
+              </div>
+            )}
+
+            {!loadingForecast && error && (
+              <div className="dashboard-error">
+                <strong>Forecast unavailable for this location</strong>
+                <p>{error}</p>
+                <button className="refresh-button" onClick={() => loadForecast()}>
+                  Try again
+                </button>
+              </div>
+            )}
+
+            {!loadingForecast && !error && data && (
+              <section className="dashboard-grid">
+                <article className="featured-risk-card">
+                  <div className="featured-card-header">
+                    <span className="section-overline">PREDICTED PM2.5</span>
+                    <span
+                      className="risk-badge"
+                      style={{
+                        color: risk.color,
+                        borderColor: `${risk.color}70`,
+                        background: `${risk.color}14`,
+                      }}
+                    >
+                      <i style={{ background: risk.color }} />
+                      {risk.title}
+                    </span>
+                  </div>
+
+                  <div className="featured-pm">
+                    {hasPrediction ? Number(data.predicted_pm25).toFixed(1) : "—"}
+                    <span>µg/m³</span>
+                  </div>
+
+                  <p className="featured-caption">
+                    Estimated fine-particle concentration from the SmokeGuard model.
+                    This is a prediction, not a direct measurement.
+                  </p>
+
+                  <div className="risk-scale">
+                    {[
+                      ["Low", "#36c995"],
+                      ["Moderate", "#f2c653"],
+                      ["High", "#ff8a4c"],
+                      ["Very High", "#ff4d78"],
+                    ].map(([label, color]) => (
+                      <div className="risk-scale-item" key={label}>
+                        <i style={{ background: color }} />
+                        <span>{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+
+                <MetricCard
+                  label="LATEST OBSERVED PM2.5"
+                  value={
+                    data.latest_pm25_observation != null
+                      ? Number(data.latest_pm25_observation).toFixed(1)
+                      : "—"
+                  }
+                  unit="µg/m³"
+                  detail={
+                    data.latest_pm25_date
+                      ? `Measured on ${data.latest_pm25_date}; latest available observation`
+                      : "No observation date returned"
+                  }
+                  accent="#e88ba0"
+                />
+
+                <MetricCard
+                  label="WIND SPEED"
+                  value={data.wind_speed_kmh != null ? Number(data.wind_speed_kmh).toFixed(1) : "—"}
+                  unit="km/h"
+                  detail={
+                    data.wind_direction_deg != null
+                      ? `Direction: ${data.wind_direction_deg}° clockwise from north`
+                      : "Wind direction unavailable"
+                  }
+                  accent="#8bc9ff"
+                />
+
+                <MetricCard
+                  label="DOWNWIND FIRE DETECTIONS · 50 KM"
+                  value={data.downwind_fires_50km ?? "—"}
+                  detail="Satellite detections classified as downwind within 50 km; not necessarily unique incidents."
+                  accent="#ff8a4c"
+                />
+
+                <MetricCard
+                  label="CLOSEST DOWNWIND FIRE"
+                  value={
+                    data.closest_downwind_fire_km != null &&
+                    Number.isFinite(Number(data.closest_downwind_fire_km))
+                      ? Number(data.closest_downwind_fire_km).toFixed(1)
+                      : "—"
+                  }
+                  unit={data.closest_downwind_fire_km != null ? "km" : ""}
+                  detail="Distance to the nearest detected downwind fire in the analysis."
+                  accent="#ff6d88"
+                />
+              </section>
+            )}
+          </div>
+
+          <aside className="dashboard-split-map" aria-label="Delhi-NCR heat map">
+            <NCRHeatMap
+              selectedId={selectedId}
+              onSelectStation={chooseMapStation}
+              predictedPm25={hasPrediction ? Number(data.predicted_pm25) : null}
+              riskColor={data ? risk.color : undefined}
+              riskTitle={data ? risk.title : undefined}
+            />
+          </aside>
+        </section>
+      )}
+
+      {!loadingForecast && !error && data && (
+        <>
           <section className="dashboard-bottom-grid">
             <article className="insight-panel">
               <div className="panel-heading">

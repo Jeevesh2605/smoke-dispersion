@@ -1,0 +1,300 @@
+.heat-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 520px;
+    overflow: hidden;
+    border-radius: 24px;
+    background: radial-gradient(circle at 50% 45%, #1b232d 0%, #0e1217 72%);
+    box-shadow: 0 20px 45px rgba(17, 24, 32, 0.16);
+    font-family: "DM Sans", sans-serif;
+  }
+  
+  .heat-canvas {
+    position: absolute;
+    inset: 0;
+  }
+  
+  .heat-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #8291a0;
+    font-size: 13px;
+  }
+  
+  .heat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d85c7a;
+    animation: heatPulse 1.2s infinite;
+  }
+  
+  @keyframes heatPulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+  
+  /* header */
+  .heat-header {
+    position: absolute;
+    top: 22px;
+    left: 24px;
+    right: 24px;
+    z-index: 10;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    pointer-events: none;
+  }
+  
+  .heat-kicker {
+    display: block;
+    margin-bottom: 6px;
+    color: #6f7e8e;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+  }
+  
+  .heat-header h3 {
+    margin: 0;
+    color: #f2f5f8;
+    font-size: 22px;
+    line-height: 1.1;
+    letter-spacing: -0.6px;
+  }
+  
+  .heat-header p {
+    max-width: 330px;
+    margin: 8px 0 0;
+    color: #7d8a98;
+    font-size: 11px;
+    line-height: 1.55;
+  }
+  
+  /* view switch */
+  .heat-views {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    background: rgba(20, 26, 33, 0.7);
+    backdrop-filter: blur(10px);
+    pointer-events: auto;
+  }
+  
+  .heat-views button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: #9aa7b5;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  
+  .heat-views button:hover { color: #f2f5f8; }
+  .heat-views button.on { background: #f2f5f8; color: #0e1217; }
+  .heat-views button:focus-visible { outline: 2px solid #f2f5f8; outline-offset: 2px; }
+  
+  /* hover tooltip */
+  .heat-tip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 15;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 85%;
+    padding: 6px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    background: rgba(10, 14, 18, 0.85);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+    will-change: transform;
+  }
+  
+  .heat-tip span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .heat-tip b { color: #9aa7b5; font-weight: 500; }
+  
+  /* selected-location chip */
+  .heat-chip {
+    position: absolute;
+    left: 22px;
+    bottom: 108px;
+    z-index: 10;
+    display: flex;
+    max-width: calc(100% - 44px);
+    align-items: center;
+    gap: 11px;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    background: rgba(20, 26, 33, 0.78);
+    backdrop-filter: blur(12px);
+    pointer-events: none;
+  }
+  
+  .heat-chip i {
+    width: 9px;
+    height: 9px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    box-shadow: 0 0 10px currentColor;
+  }
+  
+  .heat-chip div { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
+  
+  .heat-chip strong {
+    overflow: hidden;
+    color: #f2f5f8;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .heat-chip span { color: #8291a0; font-size: 10px; line-height: 1.4; }
+  
+  /* legend */
+  .heat-legend {
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    bottom: 20px;
+    z-index: 10;
+    max-width: 360px;
+    padding: 12px 14px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    background: rgba(20, 26, 33, 0.72);
+    backdrop-filter: blur(12px);
+    pointer-events: none;
+  }
+  
+  .heat-legend-bar {
+    height: 8px;
+    border-radius: 999px;
+    background: linear-gradient(
+      90deg,
+      #3ddc97 0%,
+      #3ddc97 10%,
+      #f5c451 30%,
+      #ff8a4c 61.7%,
+      #ff4d6d 100%
+    );
+  }
+  
+  .heat-legend-ticks {
+    position: relative;
+    height: 14px;
+    margin-top: 6px;
+    color: #9aa7b5;
+    font-size: 9px;
+  }
+  
+  .heat-legend-ticks span {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+  }
+  
+  .heat-legend-ticks span:first-child { transform: none; }
+  
+  .heat-legend-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 4px;
+    color: #7d8a98;
+    font-size: 9px;
+  }
+  
+  .heat-legend-nodata { display: inline-flex; align-items: center; gap: 5px; }
+  .heat-legend-nodata i { width: 8px; height: 8px; border-radius: 2px; }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .heat-dot { animation: none; }
+  }
+  
+  @media (max-width: 760px) {
+    .heat-header { flex-direction: column; gap: 12px; }
+    .heat-header p { display: none; }
+    .heat-chip { bottom: 100px; }
+  }
+
+  /* Add to the end of NCRHeatMap.css */
+.heat-hint {
+    position: absolute;
+    top: 142px;
+    left: 22px;
+    z-index: 9;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    max-width: calc(100% - 44px);
+    padding: 8px 11px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 10px;
+    background: rgba(14, 18, 23, 0.74);
+    backdrop-filter: blur(10px);
+    color: #a5b0bd;
+    font-size: 10px;
+    line-height: 1.4;
+    pointer-events: none;
+  }
+  
+  .heat-hint strong {
+    color: #edf2f7;
+    font-weight: 650;
+  }
+  
+  .heat-hint-marker {
+    width: 9px;
+    height: 9px;
+    flex: 0 0 auto;
+    border: 2px solid #f7f9fb;
+    border-radius: 50%;
+    background: #f5c451;
+    box-shadow: 0 0 0 3px rgba(245, 196, 81, 0.2);
+  }
+  
+  .heat-hint-separator {
+    color: #536171;
+  }
+  
+  @media (max-width: 760px) {
+    .heat-hint {
+      top: 150px;
+      gap: 5px;
+      font-size: 9px;
+    }
+  
+    .heat-hint-separator,
+    .heat-hint > span:last-child {
+      display: none;
+    }
+  }
+  

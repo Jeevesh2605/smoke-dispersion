@@ -709,4 +709,54 @@
       grid-template-columns: 1fr;
     }
   }
-  
+
+.dashboard-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.dashboard-split-main { min-width: 0; }
+
+/* inside the left column the cards use two columns instead of three */
+.dashboard-split-main .dashboard-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: auto;
+  margin-bottom: 0;
+}
+
+.dashboard-split-main .featured-risk-card {
+  grid-row: auto;
+  grid-column: 1 / -1;
+  min-height: 330px;
+}
+
+.dashboard-split-main .dashboard-message,
+.dashboard-split-main .dashboard-error { margin: 0; }
+
+/* the map stays in view while you read the cards */
+.dashboard-split-map {
+  position: sticky;
+  top: 16px;
+  height: min(82vh, 760px);
+  min-height: 520px;
+  min-width: 0;
+}
+
+@media (max-width: 1100px) {
+  .dashboard-split { grid-template-columns: minmax(0, 1fr); }
+
+  .dashboard-split-map {
+    position: relative;
+    top: auto;
+    height: 560px;
+    min-height: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-split-main .dashboard-grid { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-split-map { height: 520px; }
+}
